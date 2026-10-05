@@ -1,0 +1,1328 @@
+/*
+  HOSH design system.
+  Tokens live in CSS variables so light/dark and English/Urdu can swap them
+  without touching component classes.
+
+  Shape rule: buttons, chips and pills are full-pill; cards are 24px; inputs 16px.
+  Colour rule: red means danger and "hang up"; amber is for highlights and warnings.
+  Text on red is always large and bold (19px+, 700) because white on #E5484D is 3.9:1.
+*/
+@import 'tailwindcss' source('../');
+
+@theme {
+  --color-*: initial;
+  --breakpoint-xs: 380px;
+}
+
+@theme inline {
+  /* themed */
+  --color-bg: var(--bg);
+  --color-sunk: var(--bg-sunk);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-alarm: var(--alarm);
+  --color-alarm-ink: var(--alarm-ink);
+  --color-alarm-soft: var(--alarm-soft);
+  --color-amber: var(--amber);
+  --color-amber-ink: var(--amber-ink);
+  --color-amber-soft: var(--amber-soft);
+  --color-safe: var(--safe);
+  --color-safe-soft: var(--safe-soft);
+  --color-invert: var(--invert);
+  --color-invert-ink: var(--invert-ink);
+  /* brand, never themed */
+  --color-navy: #14132b;
+  --color-navy-2: #1d1c3d;
+  --color-navy-3: #2a2950;
+  --color-offwhite: #f2f2ee;
+  --color-red: #e5484d;
+  --color-red-deep: #c93a40;
+  --color-gold: #ffb81c;
+  --color-haze: #a3a2ba;
+  --color-white: #ffffff;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --font-display: var(--font-bricolage), 'Arial Black', system-ui, sans-serif;
+  --font-sans: var(--font-instrument), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  /* Urdu stacks put the Latin face FIRST. next/font declares every subset of
+     Noto Naskh (including its serif Latin), so Naskh-first would set English
+     words on Urdu pages in a serif. Our Latin faces have no Arabic glyphs, so
+     Urdu letters fall through to Naskh. Literal names skip next/font's
+     Arial-based metric fallback, which has Arabic glyphs on Windows. */
+  --font-urdu: 'Instrument Sans', var(--font-naskh), 'Instrument Sans Fallback', 'Noto Naskh Arabic', system-ui, sans-serif;
+  --font-urdu-display: 'Bricolage Grotesque', var(--font-naskh), 'Instrument Sans', 'Noto Naskh Arabic', system-ui, sans-serif;
+  --font-nastaliq: 'Bricolage Grotesque', var(--font-nastaliq-urdu), var(--font-naskh), 'Noto Nastaliq Urdu', serif;
+
+  --radius-card: 24px;
+  --radius-input: 16px;
+  --radius-xl2: 32px;
+
+  --shadow-card: var(--shadow-1);
+  --shadow-lift: var(--shadow-2);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: linear(
+    0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%,
+    1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%,
+    0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1.004 83.8%, 1
+  );
+}
+
+/* ---------- Tokens ---------- */
+:root {
+  color-scheme: light;
+  --bg: #f2f2ee;
+  --bg-sunk: #e8e8e1;
+  --surface: #fbfbf8;
+  --surface-2: #ffffff;
+  --ink: #14132b;
+  --ink-2: #3b3a55;
+  --muted: #5e5d73;
+  --line: rgb(20 19 43 / 0.11);
+  --line-strong: rgb(20 19 43 / 0.22);
+  --alarm: #e5484d;
+  --alarm-ink: #c2272d;
+  --alarm-soft: #fbe3e3;
+  --amber: #ffb81c;
+  --amber-ink: #7a5300;
+  --amber-soft: #fff1cc;
+  --safe: #1f7a4d;
+  --safe-soft: #dcf0e4;
+  --invert: #14132b;
+  --invert-ink: #f2f2ee;
+  --focus: #14132b;
+  --shadow-1: 0 1px 1px rgb(20 19 43 / 0.04), 0 2px 6px -1px rgb(20 19 43 / 0.06), 0 12px 32px -12px rgb(20 19 43 / 0.14);
+  --shadow-2: 0 1px 2px rgb(20 19 43 / 0.05), 0 8px 18px -6px rgb(20 19 43 / 0.12), 0 32px 64px -24px rgb(20 19 43 / 0.22);
+  --card-border: rgb(20 19 43 / 0.06);
+
+  /* type scale (English) */
+  --fs-body: 1.0625rem; /* 17px */
+  --lh-body: 1.6;
+  --fs-small: 0.9375rem;
+  --fs-lead: clamp(1.125rem, 0.6vw + 1rem, 1.3125rem);
+  --fs-h3: clamp(1.25rem, 0.8vw + 1.05rem, 1.5rem);
+  --fs-h2: clamp(1.875rem, 2.6vw + 1.1rem, 3.25rem);
+  --fs-h1: clamp(2.5rem, 5.2vw + 1.1rem, 5.25rem);
+  --fs-display: clamp(3.6rem, 13.5vw + 0.4rem, 10.5rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #14132b;
+    --bg-sunk: #0f0e22;
+    --surface: #1c1b39;
+    --surface-2: #232246;
+    --ink: #f2f2ee;
+    --ink-2: #d4d3e0;
+    --muted: #a3a2ba;
+    --line: rgb(242 242 238 / 0.1);
+    --line-strong: rgb(242 242 238 / 0.22);
+    --alarm: #e5484d;
+    --alarm-ink: #ff6369;
+    --alarm-soft: rgb(229 72 77 / 0.16);
+    --amber: #ffb81c;
+    --amber-ink: #ffc94d;
+    --amber-soft: rgb(255 184 28 / 0.13);
+    --safe: #4cc38a;
+    --safe-soft: rgb(76 195 138 / 0.14);
+    --invert: #f2f2ee;
+    --invert-ink: #14132b;
+    --focus: #ffb81c;
+    --shadow-1: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 12px 30px -16px rgb(0 0 0 / 0.6);
+    --shadow-2: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 24px 60px -24px rgb(0 0 0 / 0.75);
+    --card-border: rgb(242 242 238 / 0.08);
+  }
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #14132b;
+  --bg-sunk: #0f0e22;
+  --surface: #1c1b39;
+  --surface-2: #232246;
+  --ink: #f2f2ee;
+  --ink-2: #d4d3e0;
+  --muted: #a3a2ba;
+  --line: rgb(242 242 238 / 0.1);
+  --line-strong: rgb(242 242 238 / 0.22);
+  --alarm: #e5484d;
+  --alarm-ink: #ff6369;
+  --alarm-soft: rgb(229 72 77 / 0.16);
+  --amber: #ffb81c;
+  --amber-ink: #ffc94d;
+  --amber-soft: rgb(255 184 28 / 0.13);
+  --safe: #4cc38a;
+  --safe-soft: rgb(76 195 138 / 0.14);
+  --invert: #f2f2ee;
+  --invert-ink: #14132b;
+  --focus: #ffb81c;
+  --shadow-1: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 12px 30px -16px rgb(0 0 0 / 0.6);
+  --shadow-2: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 24px 60px -24px rgb(0 0 0 / 0.75);
+  --card-border: rgb(242 242 238 / 0.08);
+}
+
+/* Urdu: bigger, airier type. Naskh reads smaller than Latin at the same size. */
+:root:lang(ur) {
+  --fs-body: 1.1875rem; /* 19px */
+  --lh-body: 1.9;
+  --fs-small: 1.0625rem;
+  --fs-lead: clamp(1.25rem, 0.6vw + 1.1rem, 1.4375rem);
+  --fs-h3: clamp(1.375rem, 0.8vw + 1.15rem, 1.625rem);
+  --fs-h2: clamp(1.75rem, 2.2vw + 1.15rem, 2.875rem);
+  --fs-h1: clamp(2.125rem, 3.8vw + 1.2rem, 4.25rem);
+  --fs-display: clamp(2.75rem, 9vw + 0.6rem, 7rem);
+}
+
+/* ---------- Base ---------- */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--line);
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    scroll-padding-top: 88px;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    font-feature-settings: 'ss01' on;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100dvh;
+  }
+  :lang(ur) body,
+  body:lang(ur) {
+    font-family: var(--font-urdu);
+  }
+  :lang(ur) * {
+    letter-spacing: 0 !important;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: var(--amber);
+    color: #14132b;
+  }
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  .on-navy :focus-visible,
+  .on-navy:focus-visible {
+    outline-color: #ffb81c;
+  }
+  button,
+  [role='button'],
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+  bdi,
+  .ltr {
+    unicode-bidi: isolate;
+    direction: ltr;
+  }
+  [hidden] {
+    display: none !important;
+  }
+}
+
+/* ---------- Typography ---------- */
+@layer components {
+  .t-display {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--fs-display);
+    line-height: 0.86;
+    letter-spacing: -0.045em;
+  }
+  .t-h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--fs-h1);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+  }
+  .t-h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--fs-h2);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .t-h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-h3);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+  }
+  .t-lead {
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+  }
+  .t-small {
+    font-size: var(--fs-small);
+    line-height: 1.5;
+  }
+  .t-label {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.3;
+  }
+  .t-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  /* Urdu overrides: Naskh, no negative tracking, taller lines so marks never clip */
+  :lang(ur) .t-display {
+    font-family: var(--font-urdu-display);
+    font-weight: 700;
+    line-height: 1.45;
+  }
+  :lang(ur) .t-h1 {
+    font-family: var(--font-urdu-display);
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  :lang(ur) .t-h2 {
+    font-family: var(--font-urdu-display);
+    font-weight: 700;
+    line-height: 1.55;
+  }
+  :lang(ur) .t-h3 {
+    font-family: var(--font-urdu-display);
+    font-weight: 700;
+    line-height: 1.6;
+  }
+  :lang(ur) .t-lead,
+  :lang(ur) .t-small {
+    line-height: 1.85;
+  }
+  :lang(ur) .t-label {
+    font-family: var(--font-urdu);
+    text-transform: none;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+  /* Nastaliq is reserved for one or two big display headings. */
+  :lang(ur) .t-nastaliq {
+    font-family: var(--font-nastaliq);
+    font-weight: 700;
+    line-height: 2.05;
+    padding-block: 0.08em;
+    /* Nastaliq strokes (kaf, ye) overhang their box; keep them off the screen edge. */
+    padding-inline-start: 0.22em;
+  }
+  /* Any display-font text on Urdu pages switches to Naskh (Latin digits fall back to Bricolage). */
+  :lang(ur) .font-display {
+    font-family: var(--font-urdu-display);
+    letter-spacing: 0;
+    line-height: 1.6 !important;
+  }
+  /* Latin snippets inside Urdu text (OTP, NCCIA, numbers) keep the Latin font. */
+  :lang(ur) .t-num,
+  :lang(ur) bdi.t-num {
+    font-family: var(--font-mono);
+  }
+}
+
+/* ---------- Layout ---------- */
+@utility wrap {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-inline: 16px;
+  @media (width >= 640px) {
+    padding-inline: 28px;
+  }
+  @media (width >= 1024px) {
+    padding-inline: 44px;
+  }
+}
+@utility wrap-narrow {
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+  padding-inline: 16px;
+  @media (width >= 640px) {
+    padding-inline: 28px;
+  }
+}
+
+/* ---------- Surfaces ---------- */
+@layer components {
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-1);
+  }
+  .card-flat {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+  }
+  .card-invert {
+    background: var(--invert);
+    color: var(--invert-ink);
+    border-radius: var(--radius-card);
+  }
+  .navy-block {
+    background: #14132b;
+    color: #f2f2ee;
+  }
+  .hairline {
+    border-color: var(--line);
+  }
+}
+
+/* ---------- Buttons ---------- */
+@layer components {
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 52px;
+    padding: 0.7rem 1.4rem;
+    border-radius: 999px;
+    font-weight: 650;
+    font-size: 1.0625rem;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    transition:
+      transform 420ms var(--ease-spring),
+      background-color 160ms ease,
+      box-shadow 200ms ease,
+      color 160ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:active:not(:disabled) {
+    transform: scale(0.96);
+    transition-duration: 90ms;
+    transition-timing-function: ease-out;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+  }
+  .btn-lg {
+    min-height: 60px;
+    padding-inline: 1.75rem;
+    font-size: 1.1875rem;
+    font-weight: 700;
+  }
+  .btn-xl {
+    min-height: 72px;
+    padding-inline: 2rem;
+    font-size: 1.3125rem;
+    font-weight: 750;
+  }
+  .btn-alarm {
+    background: #e5484d;
+    color: #fff;
+    font-size: max(1.1875rem, 1em);
+    font-weight: 700;
+    box-shadow: 0 10px 24px -10px rgb(229 72 77 / 0.75);
+  }
+  .btn-alarm:hover {
+    background: #d93d42;
+  }
+  .btn-ink {
+    background: var(--invert);
+    color: var(--invert-ink);
+  }
+  .btn-ink:hover {
+    box-shadow: var(--shadow-2);
+  }
+  .btn-amber {
+    background: #ffb81c;
+    color: #14132b;
+  }
+  .btn-amber:hover {
+    background: #ffc542;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink);
+    box-shadow: inset 0 0 0 2px var(--line-strong);
+  }
+  .btn-ghost:hover {
+    background: color-mix(in oklab, var(--ink) 6%, transparent);
+  }
+  .btn-soft {
+    background: color-mix(in oklab, var(--ink) 7%, transparent);
+    color: var(--ink);
+  }
+  .btn-soft:hover {
+    background: color-mix(in oklab, var(--ink) 11%, transparent);
+  }
+  .btn-on-navy {
+    background: rgb(242 242 238 / 0.1);
+    color: #f2f2ee;
+    box-shadow: inset 0 0 0 1.5px rgb(242 242 238 / 0.22);
+  }
+  .btn-on-navy:hover {
+    background: rgb(242 242 238 / 0.16);
+  }
+  .btn-icon {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 0;
+  }
+  :lang(ur) .btn {
+    font-weight: 700;
+    line-height: 1.5;
+    padding-block: 0.5rem;
+  }
+
+  /* Text link with a thick underline */
+  .link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    text-decoration-color: color-mix(in oklab, currentColor 35%, transparent);
+    transition: text-decoration-color 150ms ease;
+  }
+  .link:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+/* ---------- Chips ---------- */
+@layer components {
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 48px;
+    padding: 0.55rem 1.05rem;
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: inset 0 0 0 2px var(--line-strong);
+    font-weight: 600;
+    line-height: 1.25;
+    transition:
+      transform 380ms var(--ease-spring),
+      background-color 140ms ease,
+      box-shadow 140ms ease,
+      color 140ms ease;
+  }
+  .chip:hover {
+    box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--ink) 45%, transparent);
+  }
+  .chip:active {
+    transform: scale(0.95);
+    transition-duration: 80ms;
+  }
+  .chip[aria-pressed='true'],
+  .chip[aria-checked='true'],
+  .chip:has(input:checked) {
+    background: var(--invert);
+    color: var(--invert-ink);
+    box-shadow: none;
+  }
+  .chip-static {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--ink) 7%, transparent);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  :lang(ur) .chip-static {
+    font-size: 1rem;
+    line-height: 1.65;
+    padding-block: 0.1rem;
+  }
+  .badge-sample {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+    background: var(--amber-soft);
+    color: var(--amber-ink);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.6;
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--amber-ink) 30%, transparent);
+  }
+  :lang(ur) .badge-sample {
+    font-family: var(--font-urdu);
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.875rem;
+  }
+}
+
+/* ---------- Inputs ---------- */
+@layer components {
+  .field {
+    width: 100%;
+    min-height: 56px;
+    border-radius: var(--radius-input);
+    background: var(--surface-2);
+    color: var(--ink);
+    padding: 0.85rem 1rem;
+    box-shadow: inset 0 0 0 2px var(--line-strong);
+    transition: box-shadow 150ms ease;
+  }
+  .field::placeholder {
+    color: var(--muted);
+    opacity: 1;
+  }
+  .field:hover {
+    box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--ink) 45%, transparent);
+  }
+  .field:focus {
+    outline: none;
+    box-shadow:
+      inset 0 0 0 2px var(--ink),
+      0 0 0 4px color-mix(in oklab, var(--amber) 55%, transparent);
+  }
+  .field[aria-invalid='true'] {
+    box-shadow: inset 0 0 0 2px var(--alarm-ink);
+  }
+}
+
+/* ---------- The hang-up motif ---------- */
+@layer components {
+  .hang-bullet {
+    display: inline-block;
+    flex: none;
+    width: 0.62em;
+    height: 0.62em;
+    border-radius: 999px;
+    background: #e5484d;
+    translate: 0 -0.05em;
+  }
+}
+
+/* Pulse rings behind the big red buttons */
+.pulse-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pulse-ring::before,
+  .pulse-ring::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 2px solid rgb(229 72 77 / 0.55);
+    animation: hosh-pulse 2.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+  .pulse-ring::after {
+    animation-delay: 1.3s;
+  }
+  .pulse-soft {
+    animation: hosh-breathe 2.6s ease-in-out infinite;
+  }
+}
+@keyframes hosh-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+@keyframes hosh-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+/* Spinner: the red circle with a rotating handset */
+@keyframes hosh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin-slow {
+  animation: hosh-spin 1.1s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .spin-slow {
+    animation-duration: 3s;
+  }
+}
+
+/* Phone-down: handset tips over and drops, used on submit */
+@keyframes hosh-hangup {
+  0% {
+    transform: rotate(0deg) translateY(0);
+  }
+  35% {
+    transform: rotate(-28deg) translateY(-6%);
+  }
+  70% {
+    transform: rotate(8deg) translateY(10%);
+  }
+  100% {
+    transform: rotate(0deg) translateY(4%);
+  }
+}
+.hangup-anim {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: hosh-hangup 700ms var(--ease-out-expo) both;
+}
+
+/* Interaction ripple from the tap point */
+.ripple-host {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.ripple {
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+  background: currentColor;
+  opacity: 0.18;
+  transform: translate(-50%, -50%) scale(0);
+  animation: hosh-ripple 620ms var(--ease-out-expo) forwards;
+  z-index: -1;
+}
+@keyframes hosh-ripple {
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+/* ---------- Motion: entry and scroll-linked reveals ---------- */
+@keyframes hosh-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes hosh-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: hosh-rise 700ms var(--ease-out-expo) both;
+    animation-delay: calc(var(--i, 0) * 70ms + 40ms);
+  }
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: hosh-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 65%;
+    }
+  }
+}
+
+/* Live ticker marquee */
+@keyframes hosh-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes hosh-marquee-rtl {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(50%);
+  }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .marquee-track[data-animate='true'] {
+    animation: hosh-marquee var(--marquee-duration, 60s) linear infinite;
+  }
+  [dir='rtl'] .marquee-track[data-animate='true'] {
+    animation-name: hosh-marquee-rtl;
+  }
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+/* With reduced motion the ticker stands still, so let people swipe it instead. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .marquee::-webkit-scrollbar {
+    display: none;
+  }
+  .marquee-track > ul[aria-hidden='true'] {
+    display: none;
+  }
+}
+
+/* New-report arrival highlight */
+@keyframes hosh-arrive {
+  0% {
+    box-shadow: 0 0 0 0 rgb(255 184 28 / 0.9);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgb(255 184 28 / 0);
+  }
+}
+.arrive {
+  animation: hosh-arrive 1.2s ease-out 2;
+}
+
+/* ---------- Page transitions (React ViewTransition) ---------- */
+::view-transition-old(.page-exit) {
+  animation: 140ms ease-in both hosh-vt-out;
+}
+::view-transition-new(.page-enter) {
+  animation: 320ms var(--ease-out-expo) 60ms both hosh-vt-in;
+}
+@keyframes hosh-vt-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+@keyframes hosh-vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+::view-transition-group(.hangup-morph) {
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+::view-transition-group(site-header),
+::view-transition-group(scam-fab) {
+  animation: none;
+  z-index: 50;
+}
+::view-transition-old(site-header),
+::view-transition-new(site-header),
+::view-transition-old(scam-fab),
+::view-transition-new(scam-fab) {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* ---------- Chart tokens ----------
+   Money-lost bands are ordinal: one red hue, validated with the dataviz
+   validator (--ordinal) against each mode's surface. Dark mode flips the
+   anchor so bigger losses read brighter. "No loss" is a neutral gray. */
+:root {
+  --loss-0: #cfced8;
+  --loss-1: #ee8a8d;
+  --loss-2: #e5484d;
+  --loss-3: #c02e34;
+  --loss-4: #8a1d22;
+  --bar: #14132b;
+  --dot-quiet: #8e8da6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --loss-0: #3d3c63;
+    --loss-1: #8f2e36;
+    --loss-2: #c23b42;
+    --loss-3: #e5484d;
+    --loss-4: #ff8a8e;
+    --bar: #f2f2ee;
+    --dot-quiet: #77769a;
+  }
+}
+:root[data-theme='dark'] {
+  --loss-0: #3d3c63;
+  --loss-1: #8f2e36;
+  --loss-2: #c23b42;
+  --loss-3: #e5484d;
+  --loss-4: #ff8a8e;
+  --bar: #f2f2ee;
+  --dot-quiet: #77769a;
+}
+
+/* ---------- Brand surfaces ---------- */
+.card-brand {
+  background: #14132b;
+  color: #f2f2ee;
+  border-radius: var(--radius-card);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .card-brand {
+    background: #201f45;
+    box-shadow: inset 0 0 0 1px rgb(242 242 238 / 0.08);
+  }
+}
+:root[data-theme='dark'] .card-brand {
+  background: #201f45;
+  box-shadow: inset 0 0 0 1px rgb(242 242 238 / 0.08);
+}
+
+/* ---------- Home hero ---------- */
+.hero-urdu {
+  font-size: clamp(3rem, 10vw + 0.4rem, 6.6rem);
+  line-height: 1.45;
+}
+.hero-now-circle {
+  transition: transform 520ms var(--ease-spring);
+}
+.hero-now:hover .hero-now-circle {
+  transform: scale(1.035);
+}
+.hero-now:active .hero-now-circle {
+  transform: scale(0.95);
+  transition-duration: 90ms;
+}
+.hero-now:focus-visible {
+  outline-offset: 6px;
+  border-radius: 40px;
+}
+/* Faint concentric rings around the big button, like a phone ringing out. */
+.hero-now-circle::before {
+  content: '';
+  position: absolute;
+  inset: -70%;
+  border-radius: 999px;
+  background: repeating-radial-gradient(circle at center, transparent 0 46px, rgb(242 242 238 / 0.05) 46px 48px);
+  -webkit-mask-image: radial-gradient(circle at center, #000 30%, transparent 70%);
+  mask-image: radial-gradient(circle at center, #000 30%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ---------- Dialer ---------- */
+.dialer-screen {
+  border-radius: 22px;
+  background: #14132b;
+  color: #f2f2ee;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 18px 40px -22px rgb(20 19 43 / 0.7);
+  transition: box-shadow 160ms ease;
+}
+.dialer-screen:focus-within {
+  box-shadow:
+    inset 0 0 0 2px #ffb81c,
+    0 18px 40px -22px rgb(20 19 43 / 0.7);
+}
+.dialer-screen.is-error {
+  box-shadow: inset 0 0 0 2px #ff6369;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .dialer-screen {
+    background: #0b0a1c;
+    box-shadow: inset 0 0 0 1px rgb(242 242 238 / 0.1);
+  }
+}
+:root[data-theme='dark'] .dialer-screen {
+  background: #0b0a1c;
+  box-shadow: inset 0 0 0 1px rgb(242 242 238 / 0.1);
+}
+.keypad-key {
+  display: grid;
+  place-items: center;
+  height: 64px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 1.5px var(--line-strong),
+    var(--shadow-1);
+  font-size: 1.75rem;
+  font-weight: 700;
+  transition:
+    transform 380ms var(--ease-spring),
+    background-color 120ms ease;
+}
+.keypad-key:active {
+  transform: scale(0.92);
+  background: color-mix(in oklab, var(--ink) 10%, var(--surface));
+  transition-duration: 70ms;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .keypad {
+    animation: hosh-rise 360ms var(--ease-out-expo) both;
+  }
+  .live-dot {
+    animation: hosh-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+@keyframes hosh-ping {
+  75%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* ---------- Report form ---------- */
+.report-step {
+  border-radius: 22px;
+  padding: 1rem;
+  transition:
+    background-color 200ms ease,
+    box-shadow 200ms ease;
+}
+.report-step.is-active {
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 1px var(--card-border),
+    var(--shadow-2);
+  padding: 1.15rem 1rem 1.25rem;
+}
+@media (width >= 640px) {
+  .report-step.is-active {
+    padding: 1.5rem;
+  }
+}
+.report-step.is-done {
+  background: color-mix(in oklab, var(--surface) 70%, transparent);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.report-step.is-todo {
+  padding-block: 0.7rem;
+}
+.step-num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  margin-top: 0.1rem;
+}
+.type-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 64px;
+  padding: 0.65rem 0.8rem;
+  border-radius: 18px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 2px var(--line-strong);
+  font-weight: 650;
+  font-size: 1rem;
+  transition:
+    transform 380ms var(--ease-spring),
+    background-color 140ms ease,
+    box-shadow 140ms ease,
+    color 140ms ease;
+}
+.type-tile:hover {
+  box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--ink) 45%, transparent);
+}
+.type-tile:active {
+  transform: scale(0.96);
+  transition-duration: 80ms;
+}
+.type-tile-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 999px;
+  background: var(--alarm-soft);
+  color: var(--alarm-ink);
+}
+.type-tile.is-on {
+  background: var(--invert);
+  color: var(--invert-ink);
+  box-shadow: none;
+}
+.type-tile.is-on .type-tile-icon {
+  background: #e5484d;
+  color: #fff;
+}
+:lang(ur) .type-tile {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+.loss-option {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 58px;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 2px var(--line-strong);
+  font-weight: 650;
+  font-size: 1.0625rem;
+  transition:
+    transform 380ms var(--ease-spring),
+    background-color 140ms ease,
+    color 140ms ease;
+}
+.loss-option:active {
+  transform: scale(0.97);
+  transition-duration: 80ms;
+}
+.loss-option.is-on {
+  background: var(--invert);
+  color: var(--invert-ink);
+  box-shadow: none;
+}
+.loss-dot {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 4px;
+  flex: none;
+}
+.submit-circle:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+
+/* ---------- Findings: bars grow and dots appear when scrolled in ---------- */
+.grow-bar {
+  transform-origin: left center;
+  transition: transform 1100ms var(--ease-out-expo);
+}
+[dir='rtl'] .grow-bar {
+  transform-origin: right center;
+}
+.inview[data-inview='false'] .grow-bar {
+  transform: scaleX(0);
+}
+.inview[data-inview='false'] .dot {
+  opacity: 0;
+  transform: scale(0.3);
+}
+.inview .dot {
+  transition:
+    opacity 380ms ease,
+    transform 520ms var(--ease-spring);
+  transition-delay: var(--d, 0ms);
+}
+
+/* Speech bubble for "What they say" */
+.speech {
+  position: relative;
+  padding: 0.9rem 1.1rem;
+  border-radius: 18px;
+  border-start-start-radius: 6px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.share-tile:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+  border-radius: 24px;
+}
+details.channel[open] summary {
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+}
+
+/* ---------- Skip link ---------- */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  inset-inline-start: 12px;
+  z-index: 60;
+  padding: 0.75rem 1.1rem;
+  border-radius: 999px;
+  background: #ffb81c;
+  color: #14132b;
+  font-weight: 700;
+  transition: top 160ms ease;
+}
+.skip-link:focus {
+  top: 12px;
+}
+
+/* ---------- Header pieces ---------- */
+.theme-icon-sun,
+.theme-label-light {
+  display: none;
+}
+:root[data-theme='dark'] .theme-icon-moon,
+:root[data-theme='dark'] .theme-label-dark {
+  display: none;
+}
+:root[data-theme='dark'] .theme-icon-sun {
+  display: block;
+}
+:root[data-theme='dark'] .theme-label-light {
+  display: inline;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .theme-icon-moon,
+  :root:not([data-theme='light']) .theme-label-dark {
+    display: none;
+  }
+  :root:not([data-theme='light']) .theme-icon-sun {
+    display: block;
+  }
+  :root:not([data-theme='light']) .theme-label-light {
+    display: inline;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .menu-sheet[open] {
+    animation: hosh-fade 200ms ease-out;
+  }
+  .menu-sheet[open] .menu-item {
+    animation: hosh-rise 460ms var(--ease-out-expo) both;
+    animation-delay: calc(var(--i, 0) * 35ms + 60ms);
+  }
+}
+
+/* Floating "Scam call now?" button */
+.scam-fab-wrap {
+  transition:
+    transform 420ms var(--ease-out-expo),
+    opacity 220ms ease,
+    visibility 0s;
+}
+.scam-fab-wrap[data-hidden='true'] {
+  transform: translateY(150%);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform 260ms ease-in,
+    opacity 200ms ease,
+    visibility 0s 260ms;
+}
+
+/* ---------- Misc ---------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.mirror-rtl:where([dir='rtl'] *) {
+  transform: scaleX(-1);
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+dialog {
+  margin: 0;
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+dialog::backdrop {
+  background: rgb(10 9 26 / 0.62);
+  backdrop-filter: blur(3px);
+}
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+mark.flag-mark {
+  background: color-mix(in oklab, #ffb81c 55%, transparent);
+  color: inherit;
+  border-radius: 6px;
+  padding: 0.05em 0.2em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  box-shadow: inset 0 -2px 0 #e5484d;
+}
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: radial-gradient(rgb(242 242 238 / 0.9) 0.6px, transparent 0.7px);
+  background-size: 4px 4px;
+}
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
